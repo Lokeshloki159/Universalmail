@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>UniversalMail</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 420px;
+      min-height: 560px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .um-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #1e293b;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .um-logo {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .um-logo svg { width: 18px; height: 18px; color: white; }
+    .um-title { font-size: 16px; font-weight: 700; color: #f8fafc; }
+    .um-subtitle { font-size: 11px; color: #94a3b8; }
+    .um-header-right { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+    .um-status-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .um-status-dot.online { background: #10b981; box-shadow: 0 0 6px #10b98180; }
+    .um-status-dot.offline { background: #ef4444; box-shadow: 0 0 6px #ef444480; }
+    .um-status-text { font-size: 10px; color: #64748b; }
+
+    /* Tabs */
+    .um-tabs {
+      display: flex;
+      border-bottom: 1px solid #1e293b;
+      overflow-x: auto;
+    }
+    .um-tab {
+      flex: 1;
+      padding: 10px 6px;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: #94a3b8;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .um-tab:hover { color: #e2e8f0; }
+    .um-tab.active {
+      border-bottom-color: #6366f1;
+      color: #f8fafc;
+    }
+    .um-tab svg { width: 16px; height: 16px; }
+
+    /* Content */
+    .um-content { padding: 16px; }
+    .um-panel { display: none; }
+    .um-panel.active { display: block; }
+
+    /* Cards */
+    .um-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .um-card + .um-card { margin-top: 10px; }
+    .um-card-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .um-stat { text-align: center; }
+    .um-stat-icon { margin-bottom: 6px; }
+    .um-stat-icon svg { width: 20px; height: 20px; color: #6366f1; }
+    .um-stat-value { font-size: 22px; font-weight: 700; color: #f8fafc; }
+    .um-stat-label { font-size: 11px; color: #94a3b8; }
+
+    /* Buttons */
+    .um-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 12px;
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .um-btn:hover { border-color: #475569; background: #1e293b; }
+    .um-btn svg { width: 16px; height: 16px; }
+    .um-btn-primary {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      border: none;
+      color: white;
+      font-weight: 600;
+      justify-content: center;
+      padding: 10px;
+    }
+    .um-btn-primary:hover { opacity: 0.9; }
+    .um-btn-danger {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.3);
+      color: #ef4444;
+    }
+    .um-btn-danger:hover { background: rgba(239, 68, 68, 0.2); }
+    .um-btn-sm {
+      padding: 4px 10px;
+      font-size: 11px;
+      width: auto;
+    }
+
+    /* Forms */
+    .um-input {
+      width: 100%; padding: 8px 10px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 6px;
+      color: #e2e8f0;
+      font-size: 12px;
+      font-family: inherit;
+      margin-bottom: 8px;
+    }
+    .um-input:focus { outline: none; border-color: #6366f1; }
+    .um-textarea { min-height: 80px; resize: vertical; }
+    .um-label {
+      display: block;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-bottom: 4px;
+      font-weight: 500;
+    }
+    .um-form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Lists */
+    .um-list { display: flex; flex-direction: column; gap: 8px; }
+    .um-list-item {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .um-list-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+    .um-list-item-title { font-size: 13px; font-weight: 600; color: #f8fafc; }
+    .um-list-item-sub { font-size: 11px; color: #94a3b8; }
+    .um-list-item-meta {
+      font-size: 11px; color: #64748b;
+      display: flex; align-items: center; gap: 4px; margin-top: 4px;
+    }
+    .um-list-item-meta svg { width: 12px; height: 12px; }
+
+    /* Badges */
+    .um-badge {
+      font-size: 10px; padding: 2px 8px;
+      border-radius: 10px; font-weight: 500;
+    }
+    .um-badge-pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+    .um-badge-sent { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+    .um-badge-failed { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+    .um-badge-sending { background: rgba(99, 102, 241, 0.15); color: #6366f1; }
+
+    /* Toggle */
+    .um-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(51, 65, 85, 0.5);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+    .um-toggle-label { font-size: 13px; color: #f8fafc; }
+    .um-toggle {
+      width: 40px; height: 22px;
+      border-radius: 11px; border: none;
+      cursor: pointer; background: #334155;
+      position: relative; transition: background 0.2s;
+    }
+    .um-toggle.on { background: #6366f1; }
+    .um-toggle::after {
+      content: '';
+      width: 18px; height: 18px;
+      border-radius: 9px; background: white;
+      position: absolute; top: 2px; left: 2px;
+      transition: left 0.2s;
+    }
+    .um-toggle.on::after { left: 20px; }
+
+    /* Section header */
+    .um-section-title {
+      font-size: 13px; font-weight: 600; color: #f8fafc;
+      margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .um-section-title svg { width: 14px; height: 14px; color: #6366f1; }
+
+    /* Empty state */
+    .um-empty { text-align: center; color: #64748b; font-size: 12px; padding: 20px; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0f172a; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+
+    /* Alert banner */
+    .um-alert {
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 11px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .um-alert-success { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #10b981; }
+    .um-alert-error { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; }
+    .um-alert-info { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); color: #818cf8; }
+  </style>
+</head>
+<body>
+  <div class="um-header">
+    <div class="um-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+    </div>
+    <div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="um-title">UniversalMail</div>
+        <span class="um-badge" id="plan-badge" style="font-size:9px; padding:1px 6px; font-weight:700; text-transform:uppercase; display:none; background:#334155; color:#94a3b8;">Free</span>
+      </div>
+      <div class="um-subtitle" id="provider-status">Connecting to server...</div>
+    </div>
+    <div class="um-header-right">
+      <div class="um-status-dot offline" id="server-dot"></div>
+      <span class="um-status-text" id="server-status">Offline</span>
+    </div>
+  </div>
+
+  <div class="um-tabs">
+    <button class="um-tab active" data-tab="dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Dashboard
+    </button>
+    <button class="um-tab" data-tab="templates">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      Templates
+    </button>
+    <button class="um-tab" data-tab="scheduled">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Scheduled
+    </button>
+    <button class="um-tab" data-tab="tracking">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      Tracking
+    </button>
+    <button class="um-tab" data-tab="settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </button>
+  </div>
+
+  <div class="um-content">
+    <!-- Dashboard -->
+    <div class="um-panel active" id="panel-dashboard">
+      <div id="server-alert"></div>
+      
+      <!-- Upgrade Banner -->
+      <div class="um-card" id="plan-banner" style="display:none; background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(139, 92, 246, 0.15)); border-color: rgba(99, 102, 241, 0.3); margin-bottom: 12px; padding: 12px 14px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div>
+            <div style="font-size:12px; font-weight:700; color:#f8fafc; display:flex; align-items:center; gap:5px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px; color:#a5b4fc;"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              UniversalMail Free Plan
+            </div>
+            <div style="font-size:10px; color:#cbd5e1; margin-top:2px;">Quota limits: 5 sends, 3 templates. Upgrade to Pro!</div>
+          </div>
+          <button class="um-btn um-btn-primary um-btn-sm" id="btn-upgrade-now" style="width:auto; white-space:nowrap; padding:4px 10px; font-size:10px; border-radius:6px;">Upgrade to Pro</button>
+        </div>
+      </div>
+
+      <div class="um-card-grid">
+        <div class="um-card um-stat">
+          <div class="um-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="um-stat-value" id="stat-templates">—</div>
+          <div class="um-stat-label">Templates</div>
+        </div>
+        <div class="um-card um-stat">
+          <div class="um-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="um-stat-value" id="stat-scheduled">—</div>
+          <div class="um-stat-label">Pending</div>
+        </div>
+        <div class="um-card um-stat">
+          <div class="um-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 4 12 14.01 9 11.01"/><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/></svg></div>
+          <div class="um-stat-value" id="stat-sent">—</div>
+          <div class="um-stat-label">Sent</div>
+        </div>
+        <div class="um-card um-stat">
+          <div class="um-stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="um-stat-value" id="stat-opens">—</div>
+          <div class="um-stat-label">Opens Today</div>
+        </div>
+      </div>
+      <div class="um-card">
+        <div class="um-section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Quick Actions
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="um-btn" id="qa-compose">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#6366f1;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>New Scheduled Email</span>
+          </button>
+          <button class="um-btn" id="qa-template">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:#8b5cf6;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span>Create Template</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Templates -->
+    <div class="um-panel" id="panel-templates">
+      <div class="um-section-title" id="templates-quota-title" style="margin-bottom:12px; display:none; justify-content:space-between; align-items:center; background:rgba(30,41,59,0.3); padding:8px 12px; border-radius:6px; border:1px solid rgba(51,65,85,0.3);">
+        <div style="display:flex; align-items:center; gap:6px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px; height:14px; color:#818cf8;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          <span>Templates Used</span>
+        </div>
+        <span style="font-size:12px; font-weight:700; color:#818cf8;" id="templates-quota-val">0 / 3</span>
+      </div>
+      <button class="um-btn um-btn-primary" id="btn-new-template" style="margin-bottom:12px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Template
+      </button>
+      <div id="template-form" style="display:none;margin-bottom:12px;">
+        <input class="um-input" id="tpl-name" placeholder="Template name" />
+        <input class="um-input" id="tpl-subject" placeholder="Subject line" />
+        <textarea class="um-input um-textarea" id="tpl-body" placeholder="Email body..."></textarea>
+        <button class="um-btn um-btn-primary" id="btn-save-template" style="margin-bottom:8px;">Save Template</button>
+      </div>
+      <div class="um-list" id="template-list"></div>
+    </div>
+
+    <!-- Scheduled -->
+    <div class="um-panel" id="panel-scheduled">
+      <div class="um-list" id="scheduled-list"></div>
+    </div>
+
+    <!-- Tracking -->
+    <div class="um-panel" id="panel-tracking">
+      <div class="um-list" id="tracking-list"></div>
+    </div>
+
+    <!-- Settings -->
+    <div class="um-panel" id="panel-settings">
+      <div class="um-section-title" style="margin-bottom:12px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 8h20"/></svg>
+        SMTP Configuration
+      </div>
+      <div id="smtp-alert"></div>
+      <div class="um-card" style="margin-bottom:12px;">
+        <label class="um-label">SMTP Host</label>
+        <input class="um-input" id="smtp-host" placeholder="smtp.gmail.com" />
+        <div class="um-form-row">
+          <div>
+            <label class="um-label">Port</label>
+            <input class="um-input" id="smtp-port" type="number" placeholder="587" />
+          </div>
+          <div>
+            <label class="um-label">Secure (SSL)</label>
+            <button class="um-toggle" id="smtp-secure"></button>
+          </div>
+        </div>
+        <label class="um-label">Username / Email</label>
+        <input class="um-input" id="smtp-user" placeholder="you@example.com" />
+        <label class="um-label">Password / App Password</label>
+        <input class="um-input" id="smtp-pass" type="password" placeholder="••••••••" />
+        <label class="um-label">From Address</label>
+        <input class="um-input" id="smtp-from" placeholder="you@example.com" />
+        <button class="um-btn um-btn-primary" id="btn-save-smtp" style="margin-top:4px;">Save SMTP Settings</button>
+      </div>
+
+      <div class="um-section-title" style="margin-top:16px;margin-bottom:12px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6"/></svg>
+        Preferences
+      </div>
+      <div class="um-toggle-row">
+        <span class="um-toggle-label">Email Open Tracking</span>
+        <button class="um-toggle on" id="toggle-tracking"></button>
+      </div>
+      <div class="um-card">
+        <label class="um-label">Timezone</label>
+        <input class="um-input" id="setting-tz" readonly />
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

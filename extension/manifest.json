@@ -1,0 +1,77 @@
+{
+  "manifest_version": 3,
+  "name": "UniversalMail — Email Productivity",
+  "version": "1.0.0",
+  "description": "Schedule emails, track opens, use templates, and snooze messages on Outlook, Yahoo, iCloud & IMAP clients.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://outlook.live.com/*",
+    "https://outlook.office.com/*",
+    "https://outlook.office365.com/*",
+    "https://mail.yahoo.com/*",
+    "https://mail.aol.com/*",
+    "https://www.icloud.com/mail/*",
+    "https://mail.zoho.com/*",
+    "https://*.mail.proton.me/*",
+    "https://app.fastmail.com/*",
+    "http://localhost:3000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://outlook.live.com/*",
+        "https://outlook.office.com/*",
+        "https://outlook.office365.com/*"
+      ],
+      "js": ["content-common.js", "content-outlook.js"],
+      "css": ["content-styles.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://mail.yahoo.com/*",
+        "https://mail.aol.com/*"
+      ],
+      "js": ["content-common.js", "content-yahoo.js"],
+      "css": ["content-styles.css"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "https://www.icloud.com/mail/*"
+      ],
+      "js": ["content-common.js", "content-icloud.js"],
+      "css": ["content-styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.svg",
+      "32": "icons/icon32.svg",
+      "48": "icons/icon48.svg",
+      "128": "icons/icon128.svg"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.svg",
+    "32": "icons/icon32.svg",
+    "48": "icons/icon48.svg",
+    "128": "icons/icon128.svg"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
