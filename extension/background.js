@@ -164,3 +164,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     return true;
   }
 });
+
+// ─── Startup Sync ─────────────────────────────────────────────
+syncTemplates().catch((err) => console.error('[Background] Startup sync failed:', err.message));
+

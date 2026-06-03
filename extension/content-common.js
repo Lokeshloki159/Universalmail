@@ -139,7 +139,7 @@
   };
 
   UM.generateTrackingPixel = function(emailId) {
-    const pixelUrl = `https://universalmail.io/track?id=${emailId}&t=${Date.now()}`;
+    const pixelUrl = `https://universalmail.onrender.com/track?id=${emailId}&t=${Date.now()}`;
     return `<img src="${pixelUrl}" width="1" height="1" alt="" style="display:none" />`;
   };
 

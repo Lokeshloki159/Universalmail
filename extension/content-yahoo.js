@@ -124,8 +124,8 @@
     const emailId = 'track-' + Date.now();
     const pixel = UM.generateTrackingPixel(emailId);
 
-    if (bodyField.innerHTML.includes('universalmail.io/track')) {
-      bodyField.innerHTML = bodyField.innerHTML.replace(/<img[^>]*universalmail\.io\/track[^>]*>/g, '');
+    if (bodyField.innerHTML.includes('universalmail.onrender.com/track')) {
+      bodyField.innerHTML = bodyField.innerHTML.replace(/<img[^>]*universalmail\.onrender\.com\/track[^>]*>/g, '');
       UM.showToast('Tracking disabled');
     } else {
       bodyField.innerHTML += pixel;
