@@ -19,7 +19,7 @@
     "https://mail.zoho.com/*",
     "https://*.mail.proton.me/*",
     "https://app.fastmail.com/*",
-    "http://localhost:3000/*"
+    "https://universalmail.onrender.com/*"
   ],
   "background": {
     "service_worker": "background.js"

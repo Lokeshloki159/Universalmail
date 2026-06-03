@@ -3,7 +3,7 @@
 import nodemailer from 'nodemailer';
 import { getUser } from './db.js';
 
-const TRACKING_BASE = process.env.TRACKING_BASE_URL || 'http://localhost:3000';
+const TRACKING_BASE = process.env.TRACKING_BASE_URL || 'https://universalmail.onrender.com';
 
 /**
  * Build a Nodemailer transport from user SMTP settings or env defaults.

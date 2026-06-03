@@ -32,7 +32,7 @@
   // ========== SERVER CHECK ==========
   async function checkServer() {
     try {
-      const res = await fetch('http://localhost:3000/health');
+      const res = await fetch('https://universalmail.onrender.com/health');
       const json = await res.json();
       if (json.status === 'ok') {
         serverOnline = true;
@@ -401,7 +401,7 @@
 
   // ========== INIT ==========
   document.getElementById('btn-upgrade-now').addEventListener('click', () => {
-    chrome.tabs.create({ url: 'http://localhost:3000/api/billing/checkout' });
+    chrome.tabs.create({ url: 'https://universalmail.onrender.com/api/billing/checkout' });
   });
 
   loadDashboard();

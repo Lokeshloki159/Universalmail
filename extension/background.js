@@ -1,6 +1,6 @@
 /* UniversalMail — Background Service Worker (Production) */
 
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://universalmail.onrender.com';
 
 // ─── Installation ─────────────────────────────────────────────
 chrome.runtime.onInstalled.addListener(() => {

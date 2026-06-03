@@ -154,7 +154,7 @@ const MonetizationStrategy: React.FC = () => {
 
               {plan.name === 'Pro' ? (
                 <a
-                  href="http://localhost:3000/api/billing/checkout"
+                  href="https://universalmail.onrender.com/api/billing/checkout"
                   className={`w-full block text-center py-3 rounded-xl font-semibold text-sm transition-all ${
                     plan.popular
                       ? 'bg-gradient-to-r from-indigo-500 to-violet-500 text-white hover:shadow-lg hover:shadow-indigo-500/25'
